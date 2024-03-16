@@ -1,4 +1,6 @@
 <script setup>
+import { getpressureMm } from '../utils/index'
+
 const props = defineProps({
   weatherInfo: {
     type: [Object, null],
@@ -74,10 +76,10 @@ const props = defineProps({
                     <div class="card-centered">
                     <div class="info-main">
                         <div class="info-main-num">
-                        765
+                          {{ getpressureMm(weatherInfo?.main?.pressure) }}
                         </div>
                         <div class="info-main-text">
-                        mm
+                          mm
                         </div>
                     </div> 
                     </div> 
@@ -90,7 +92,7 @@ const props = defineProps({
                 <div class="card-small-info">
                     <div class="card-small-data">
                     <div class="info-main-num">
-                        21
+                        {{ Math.round(weatherInfo?.main?.feels_like) }}
                     </div>
                     <div class="info-main-text">
                         °C
@@ -141,7 +143,7 @@ const props = defineProps({
                 <div class="card-small-info">
                     <div class="card-small-data">
                     <div class="info-main-num">
-                        80
+                        {{ weatherInfo?.clouds?.all }}
                     </div>
                     <div class="info-main-text">
                         %
