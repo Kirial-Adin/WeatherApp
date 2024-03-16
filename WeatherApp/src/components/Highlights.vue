@@ -1,12 +1,24 @@
 <script setup>
-import { getpressureMm } from '../utils/index'
+import { computed } from 'vue';
+import { getpressureMm, getTime } from '../utils/index'
 
 const props = defineProps({
   weatherInfo: {
     type: [Object, null],
     required: true,
   }
-})
+});
+
+const timeZone = computed(() => props.weatherInfo?.timezone);
+
+const sunriseTime = computed(() => {
+  return getTime(props.weatherInfo?.sys?.sunrise + timeZone.value)
+});
+
+const sunsetTime = computed(() => {
+  return getTime(props.weatherInfo?.sys?.sunset + timeZone.value)
+});
+
 </script>
 
 <template>
@@ -118,19 +130,19 @@ const props = defineProps({
                     <div class="state">
                         <div class="state-pic"></div>
                         <div class="state-title">
-                        Sunrise
+                          Sunrise
                         </div>
                         <div class="state-time">
-                        07:31:42
+                          {{ sunriseTime }}
                         </div>
                     </div>
                     <div class="state">
                         <div class="state-pic state-pic--flipped"></div>
                         <div class="state-title">
-                        Sunset
+                          Sunset
                         </div>
                         <div class="state-time">
-                        18:34:19
+                          {{ sunsetTime }}
                         </div>
                     </div>
                     </div>
