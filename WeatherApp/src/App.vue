@@ -1,13 +1,15 @@
 <script setup>
 import {API_KEY, BASE_URL} from './constants/index.js';
+import {capitalizeFirstLetter} from './utils/index.js'
 import WeatherSummary from './components/WeatherSummary.vue';
 import Highlights from './components/Highlights.vue';
 import Coords from './components/Coords.vue';
 import Humidity from './components/Humidity.vue';
-import {ref, onMounted} from 'vue';
+import {ref, onMounted, computed} from 'vue';
 
 const city = ref('Paris');
 const weatherInfo = ref(null);
+const isError = computed(() => weatherInfo.value?.cod !== 200)
 
 function getWeather() {
   fetch(`${BASE_URL}?q=${city.value}&units=metric&appid=${API_KEY}`)
@@ -25,19 +27,27 @@ onMounted(getWeather)
     <div class="container">
       <div class="laptop">
         <div class="sections">
-          <section class="section section-left">
+          <section class="section section-left" :class="{'section-error': isError}">
             <div class="info">
               <div class="city-inner">
                 <input v-model="city" @keyup.enter="getWeather" type="text" class="search">
               </div>
-              <WeatherSummary :weatherInfo="weatherInfo" />
+              <WeatherSummary v-if="!isError" :weatherInfo="weatherInfo" />
+              <div v-else class="error">
+                <div class="error-title">
+                  Oooooops! Something went wrong!
+                </div>
+                <div v-if="weatherInfo?.message" class="error-message">
+                  {{ capitalizeFirstLetter(weatherInfo?.message) }}
+                </div>
+              </div>
             </div>
           </section>
-          <section class="section section-right">
+          <section v-if="!isError" class="section section-right">
             <Highlights :weatherInfo="weatherInfo" />
           </section> 
         </div>
-        <div v-if="weatherInfo?.weather" class="sections">
+        <div v-if="!isError" class="sections">
           <Coords :coord="weatherInfo?.coord" />
           <Humidity :humidity="weatherInfo?.main?.humidity" />
         </div>
@@ -78,6 +88,10 @@ onMounted(getWeather)
 
   @media (max-width: 767px)
     width: 100%
+    padding-right: 0
+  &.section-error
+    min-width: 235px
+    width: auto
     padding-right: 0
 
 .section-right
@@ -130,4 +144,14 @@ onMounted(getWeather)
 
   @media (max-width: 767px)
     width: 100%
+
+.error 
+  padding-top: 20px
+  &-title
+    font-size: 18px
+    font-weight: 700
+    
+  &-message 
+    padding-top: 10px
+    font-size: 13px
 </style>
